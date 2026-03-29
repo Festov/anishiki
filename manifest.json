@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "Anilibria → Shikimori",
+  "version": "1.2",
+  "description": "Добавляет ссылку на Shikimori, извлекая название из URL Anilibria. Создал Festov",
+  "permissions": ["activeTab","cookies"],
+  "host_permissions": ["https://shikimori.io/*"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://anilibria.top/anime/releases/release/*"],
+      "js": ["content.js"]
+    }
+  ]
+}
