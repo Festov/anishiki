@@ -1,143 +1,120 @@
-// ==UserScript==
-// @name         Anilibria to Shikimori Widget
-// @match        https://anilibria.top/anime/releases/release/*
-// @grant        none
-// @author       Festov
-// ==/UserScript==
-console.log('%cСкрипт расширения запущен.', 'color: blue;');
-(function() {
+(function () {
+    const CHIP_CLASS = 'anishiki-shikimori-chip';
+    const CONTAINER_SELECTOR = '.d-flex.align-center.mb-3';
+    const STATUS_CHIP_SELECTOR = '.v-chip.v-chip--variant-outlined';
+
     const path = window.location.pathname;
-	console.log(path);
-    const anilibriaSlugParts = path.split('/');
-	const anilibriaSlug = anilibriaSlugParts[4];
+    const anilibriaSlug = path.split('/')[4];
 
-    // --- ФУНКЦИЯ: Создаем плавающую кнопку ---
-    function createFloatingButton(url) {
-        // Проверяем, не создана ли кнопка уже
-        if (document.getElementById('shiki-widget-btn')) return;
-
-        // 1. Создаем саму кнопку
-        const button = document.createElement('a');
-        button.id = 'shiki-widget-btn';
-        button.href = url;
-        button.textContent = 'S';
-        button.target = '_blank';
-        
-        // 2. Добавляем стили
-        button.style.cssText = `
-            position: fixed;
-            z-index: 9999;
-            bottom: 20px;
-            right: 20px;
-            width: 50px;
-            height: 50px;
-            line-height: 50px;
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
-            color: white !important;
-            background-color: #E53935;
-            border-radius: 50%;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-            text-decoration: none;
-            opacity: 0.9;
-            transition: opacity 0.3s, transform 0.3s;
-        `;
-
-        // 3. Добавляем эффект при наведении
-        button.addEventListener('mouseenter', () => {
-            button.style.opacity = '1';
-            button.style.transform = 'scale(1.05)';
-        });
-        button.addEventListener('mouseleave', () => {
-            button.style.opacity = '0.9';
-            button.style.transform = 'scale(1)';
-        });
-
-        // 4. Добавляем кнопку на страницу
-        document.body.appendChild(button);
+    if (!anilibriaSlug) {
+        return;
     }
 
-    // --- ФУНКЦИЯ: Удаляем кнопку (на случай ошибки) ---
-    function removeFloatingButton() {
-        const btn = document.getElementById('shiki-widget-btn');
-        if (btn) btn.remove();
+    function waitForElement(selector, timeout = 10000) {
+        return new Promise((resolve, reject) => {
+            const existing = document.querySelector(selector);
+            if (existing) {
+                resolve(existing);
+                return;
+            }
+
+            const observer = new MutationObserver(() => {
+                const element = document.querySelector(selector);
+                if (element) {
+                    observer.disconnect();
+                    resolve(element);
+                }
+            });
+
+            observer.observe(document.body, { childList: true, subtree: true });
+
+            setTimeout(() => {
+                observer.disconnect();
+                reject(new Error(`Element not found: ${selector}`));
+            }, timeout);
+        });
     }
-	
-	function createStatus(linkshiki) {
-		console.log('%cПоиск блока для добавления ссылки', 'color: teal;');
-		setTimeout(addCustomChip, 1000); // Задержка в 1 секунду
-		function addCustomChip() {
-		// Проверяем, появился ли нужный контейнер
-		const container = document.querySelector('.d-flex.align-center.mb-3');
-    
-		if (!container) {
-			console.warn('%cМесто не найдено.', 'color: orange;');
-		return;
-		}
-		console.log('%cБлок найден.', 'color: teal;');
 
-		// Находим текущий элемент "Завершен"
-		const currentChip = container.querySelector('.v-chip.v-chip--variant-outlined');
+    function createShikimoriChip(shikimoriUrl) {
+        if (document.querySelector(`.${CHIP_CLASS}`)) {
+            return;
+        }
 
-		if (!currentChip) {
-			console.error('%cЭлемент "Завершен" не найден.', 'color: red;');
-		return;
-		}
-		// console.log('%cЭлемент "Завершен" найден.', 'color: teal;', currentChip);
+        const chip = document.createElement('span');
+        chip.className = [
+            'v-chip',
+            'v-theme--dark',
+            'text-white',
+            'v-chip--density-default',
+            'v-chip--size-small',
+            'v-chip--variant-outlined',
+            'fz-70',
+            'ff-heading',
+            'px-2',
+            'ml-2',
+            CHIP_CLASS,
+        ].join(' ');
+        chip.draggable = false;
 
-		// Создаем новый элемент
-		const newChip = document.createElement('span');
-		newChip.classList.add(
-		'v-chip',
-		'v-theme--dark',
-		'text-white',
-		'v-chip--density-default',
-		'v-chip--size-small',
-		'v-chip--variant-outlined',
-		'fz-70',
-		'ff-heading',
-		'px-2',
-		'ml-2',
-		'custom-status' // Уникальный класс для отслеживания
-		);
-		newChip.draggable = false;
+        const underlay = document.createElement('span');
+        underlay.className = 'v-chip__underlay';
 
-		// Внутренняя структура чипа
-		newChip.innerHTML = `
-		<span class="v-chip__underlay"></span>
-		<div class="v-chip__content" data-no-activator="">
-		<span><a href='${linkshiki}' style="text-decoration: none; color: inherit;" target="_blank">Шикимори</a></span>
-		</div>
-		`;
-		console.log('%cНовый элемент создан.', 'color: teal;');
+        const content = document.createElement('div');
+        content.className = 'v-chip__content';
+        content.dataset.noActivator = '';
 
-		// Добавляем новый элемент после текущего
-		container.insertBefore(newChip, currentChip.nextSibling);
-		}
-};
+        const wrapper = document.createElement('span');
 
+        const link = document.createElement('a');
+        link.href = shikimoriUrl;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.textContent = 'Шикимори';
+        link.style.textDecoration = 'none';
+        link.style.color = 'inherit';
 
-    // --- ЛОГИКА РАБОТЫ СКРИПТА ---
-    removeFloatingButton(); // Убираем старую кнопку, если есть
+        wrapper.appendChild(link);
+        content.appendChild(wrapper);
+        chip.appendChild(underlay);
+        chip.appendChild(content);
+
+        return chip;
+    }
+
+    async function insertShikimoriChip(shikimoriUrl) {
+        try {
+            const container = await waitForElement(CONTAINER_SELECTOR);
+            const statusChip = container.querySelector(STATUS_CHIP_SELECTOR);
+
+            if (!statusChip) {
+                console.warn('[Anishiki] Status chip not found.');
+                return;
+            }
+
+            const chip = createShikimoriChip(shikimoriUrl);
+            if (!chip) {
+                return;
+            }
+
+            container.insertBefore(chip, statusChip.nextSibling);
+        } catch (error) {
+            console.warn('[Anishiki] Could not insert chip:', error.message);
+        }
+    }
+
     chrome.runtime.sendMessage(
         { action: 'findShikimoriLinkBySlug', slug: anilibriaSlug },
-        function(response) {
-            if (response && response.success) {
-                // createFloatingButton(response.url); // Создаем кнопку
-				console.log('%cСериал найден на Shikimori:', 'color: red;', response.url);
-				createStatus(response.url);
+        (response) => {
+            if (chrome.runtime.lastError) {
+                console.warn('[Anishiki]', chrome.runtime.lastError.message);
+                return;
+            }
+
+            if (response?.success) {
+                insertShikimoriChip(response.url);
             } else {
-                console.log('Не удалось найти сериал на Shikimori.', response?.error);
+                console.warn('[Anishiki] Shikimori link not found:', response?.error);
             }
         }
     );
-    // Слушаем логи из background.js
-    chrome.runtime.onMessage.addListener((msg) => {
-        if (msg.type === 'log') {
-            console.log(`${msg.text}`);
-        }
-    });
 })();
-
-/////////////////////////////////////
