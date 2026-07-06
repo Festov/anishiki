@@ -1,0 +1,46 @@
+.anishiki-link--chip {
+    display: inline-flex;
+    align-items: center;
+}
+
+.anishiki-link--chip a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.anishiki-link--chip a:hover {
+    text-decoration: underline;
+}
+
+.anishiki-link--menu a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.anishiki-link--menu a:hover {
+    text-decoration: underline;
+}
+
+.anishiki-link--fallback {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 2147483646;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 48px;
+    height: 48px;
+    padding: 0 14px;
+    border-radius: 999px;
+    background: #e53935;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
+    color: #fff !important;
+    font: 600 14px/1 system-ui, sans-serif;
+    text-decoration: none;
+}
+
+.anishiki-link--fallback:hover {
+    transform: translateY(-1px);
+    color: #fff !important;
+}

@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Anishiki",
-  "version": "1.3.1",
-  "description": "Добавляет ссылку на Shikimori на страницах Anilibria. Создал Festov",
+  "version": "2.0",
+  "description": "Двусторонние ссылки между Anilibria и Shikimori. Создал Festov",
   "host_permissions": [
     "https://shikimori.io/*",
     "https://anilibria.top/*",
@@ -17,7 +17,17 @@
         "https://anilibria.top/anime/releases/release/*",
         "https://*.anilibria.top/anime/releases/release/*"
       ],
-      "js": ["content.js"],
+      "js": ["shared/utils.js", "content/anilibria.js"],
+      "css": ["styles/widget.css"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://shikimori.io/animes/*",
+        "https://shikimori.one/animes/*"
+      ],
+      "js": ["shared/utils.js", "content/shikimori.js"],
+      "css": ["styles/widget.css"],
       "run_at": "document_idle"
     }
   ]
