@@ -2,12 +2,15 @@
     const CHIP_CLASS = 'anishiki-shikimori-chip';
     const CONTAINER_SELECTOR = '.d-flex.align-center.mb-3';
     const STATUS_CHIP_SELECTOR = '.v-chip.v-chip--variant-outlined';
+    const RELEASE_PATH_RE = /^\/anime\/releases\/release\/([^/]+)/;
 
-    const path = window.location.pathname;
-    const anilibriaSlug = path.split('/')[4];
+    function getReleaseSlug() {
+        const match = window.location.pathname.match(RELEASE_PATH_RE);
+        return match?.[1] ?? null;
+    }
 
-    if (!anilibriaSlug) {
-        return;
+    function isReleasePage() {
+        return RELEASE_PATH_RE.test(window.location.pathname);
     }
 
     function waitForElement(selector, timeout = 10000) {
@@ -102,19 +105,46 @@
         }
     }
 
-    chrome.runtime.sendMessage(
-        { action: 'findShikimoriLinkBySlug', slug: anilibriaSlug },
-        (response) => {
-            if (chrome.runtime.lastError) {
-                console.warn('[Anishiki]', chrome.runtime.lastError.message);
-                return;
-            }
-
-            if (response?.success) {
-                insertShikimoriChip(response.url);
-            } else {
-                console.warn('[Anishiki] Shikimori link not found:', response?.error);
-            }
+    function init() {
+        if (!isReleasePage()) {
+            return;
         }
-    );
+
+        const anilibriaSlug = getReleaseSlug();
+        if (!anilibriaSlug) {
+            return;
+        }
+
+        chrome.runtime.sendMessage(
+            { action: 'findShikimoriLinkBySlug', slug: anilibriaSlug },
+            (response) => {
+                if (chrome.runtime.lastError) {
+                    console.warn('[Anishiki]', chrome.runtime.lastError.message);
+                    return;
+                }
+
+                if (response?.success) {
+                    insertShikimoriChip(response.url);
+                } else {
+                    console.warn('[Anishiki] Shikimori link not found:', response?.error);
+                }
+            }
+        );
+    }
+
+    init();
+
+    // Anilibria is a Nuxt SPA — re-run when navigating between releases without reload.
+    let lastPath = window.location.pathname;
+    const navigationObserver = new MutationObserver(() => {
+        if (window.location.pathname === lastPath) {
+            return;
+        }
+
+        lastPath = window.location.pathname;
+        document.querySelector(`.${CHIP_CLASS}`)?.remove();
+        init();
+    });
+
+    navigationObserver.observe(document.body, { childList: true, subtree: true });
 })();
