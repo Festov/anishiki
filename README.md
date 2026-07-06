@@ -1,36 +1,71 @@
-# README
+# Anishiki
+
 > ENG
 
-Name: **Anishiki**
+A Chrome extension that adds quick cross-links between **AniLiberty (Anilibria)** and **Shikimori** anime pages.
 
-### *Description:*
+Open a release on Anilibria — get a link to Shikimori. Open an anime on Shikimori — get a link back to Anilibria.
 
-A convenient extension for Anilibria users that adds a floating action button linking to the corresponding anime page on Shikimori.
+### Features
 
-Stop wasting time on manual searches. The extension automatically detects the anime title on the Anilibria page, finds it in the Shikimori database, and pins a quick-access button to the corner of your screen or in the place of the series' status. 
+- **Bidirectional navigation** — Anilibria ↔ Shikimori in one click
+- **Smart matching** — uses official APIs and title/slug scoring
+- **Native UI** — chip on Anilibria, sidebar link on Shikimori
+- **SPA support** — works with client-side navigation on both sites
 
-### *Features:*
+### Installation
 
-- One-Click Navigation: Instantly open the anime page on Shikimori.
+1. Clone or download this repository.
+2. Open `chrome://extensions` in Chrome or Edge.
+3. Enable **Developer mode**.
+4. Click **Load unpacked** and select the project folder.
+5. Open a release on [Anilibria](https://anilibria.top) or an anime on [Shikimori](https://shikimori.io).
 
-- Automatic Matching: The extension handles the search for you.
+### Where to find the links
 
-- Clean UI: A minimalist button that stays out of your way but is always accessible.
+| Site | Location |
+|------|----------|
+| Anilibria | Chip **Шикимори** next to the release status |
+| Shikimori | Link **AniLiberty** in the “На других сайтах” sidebar block |
+
+If the page layout changes, a floating fallback button appears in the bottom-right corner.
+
+### Requirements
+
+- Google Chrome 88+ or Microsoft Edge 88+ (Manifest V3)
+
+---
 
 > RUS
 
-Название: **Anishiki**
+Расширение добавляет быстрые переходы между **AniLiberty (Anilibria)** и **Shikimori**.
 
-### *Описание:*
+Откройте релиз на Anilibria — появится ссылка на Shikimori. Откройте аниме на Shikimori — появится ссылка на Anilibria.
 
-Удобное расширение для пользователей Anilibria, которое добавляет на страницу просмотра плавающую кнопку-ссылку на соответствующий сериал в базе данных Shikimori.
+### Особенности
 
-Вам больше не нужно вручную искать аниме на другом сайте. Расширение автоматически анализирует название сериала на странице Anilibria, находит его на Shikimori и закрепляет кнопку быстрого перехода в углу экрана или в месте состояния сериала.
+- **Двусторонняя навигация** — Anilibria ↔ Shikimori в один клик
+- **Умный поиск** — официальные API и сопоставление по slug/названию
+- **Встроенный UI** — чип на Anilibria, ссылка в боковой панели на Shikimori
+- **Поддержка SPA** — работает при переходах без перезагрузки страницы
 
-### *Особенности:*
+### Установка
 
-- Быстрый переход: Мгновенно открывайте страницу на Shikimori.
+1. Склонируйте или скачайте репозиторий.
+2. Откройте `chrome://extensions` в Chrome или Edge.
+3. Включите **Режим разработчика**.
+4. Нажмите **Загрузить распакованное расширение** и выберите папку проекта.
+5. Откройте релиз на [Anilibria](https://anilibria.top) или аниме на [Shikimori](https://shikimori.io).
 
-- Автоматический поиск: Расширение само находит нужный сериал.
+### Где искать ссылки
 
-- Минималистичный дизайн: Компактная кнопка не мешает просмотру и всегда под рукой.
+| Сайт | Где |
+|------|-----|
+| Anilibria | Чип **Шикимори** рядом со статусом релиза |
+| Shikimori | Ссылка **AniLiberty** в блоке «На других сайтах» |
+
+Если вёрстка страницы изменилась, появится плавающая кнопка в правом нижнем углу.
+
+### Требования
+
+- Google Chrome 88+ или Microsoft Edge 88+ (Manifest V3)
